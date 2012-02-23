@@ -11,7 +11,7 @@ describe BorderPatrol::Region do
   end
 
   describe "#contains_point?" do
-    subject { BorderPatrol::Region.new(@polygons) }
+    subject { BorderPatrol::Region.new.add(:name => "Colorado", :description => "Colorado description", :id => "COL", :polygons => @polygons) }
 
     it "raises an argument error if contains_point? takes more than 3 arguments" do
       expect { subject.contains_point? }.to raise_exception ArgumentError
@@ -22,12 +22,16 @@ describe BorderPatrol::Region do
       point = BorderPatrol::Point.new(1,2)
       @polygons = [create_polygon, create_polygon(30)]
 
+      a = subject.contains_point?(point)
+
       subject.contains_point?(point).should be_true
     end
 
     it "returns false if no polygons contain the point" do
       point = BorderPatrol::Point.new(-1,-2)
       @polygons = [create_polygon, create_polygon(30)]
+
+      a = subject.contains_point?(point)
 
       subject.contains_point?(point).should be_false
     end
@@ -37,6 +41,17 @@ describe BorderPatrol::Region do
 
       subject.contains_point?(1,2).should be_true
     end
+
+  end
+
+  describe "#placemark" do
+    subject { BorderPatrol::Region.new.add(:polygons => @polygons) }
+
+    it "return the placemark from the polygon that contains the point" do
+      @polygons = [create_polygon, create_polygon(30)]
+      subject.contains_point?(1,2).should be_true
+    end
+
   end
 
   def create_polygon(start=0)

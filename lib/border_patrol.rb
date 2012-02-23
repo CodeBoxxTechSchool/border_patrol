@@ -1,13 +1,21 @@
 module BorderPatrol
-  class InsufficientPointsToActuallyFormAPolygonError < ArgumentError; end
-  class Point < Struct.new(:x, :y); end
+  class InsufficientPointsToActuallyFormAPolygonError < ArgumentError;
+  end
+  class Point < Struct.new(:x, :y);
+  end
 
   def self.parse_kml(string)
     doc = Nokogiri::XML(string)
-    polygons = doc.xpath('//kml:Polygon', 'kml' => 'http://earth.google.com/kml/2.2').map do |polygon_kml|
-      parse_kml_polygon_data(polygon_kml.to_s)
+
+    doc.xpath('//kml:Placemark', 'kml' => 'http://earth.google.com/kml/2.2').map do |placemark_kml|
+      polygons = placemark_kml.xpath('//kml:Polygon', 'kml' => 'http://earth.google.com/kml/2.2').map do |polygon_kml|
+        parse_kml_polygon_data(polygon_kml.to_s)
+      end
+      name = placemark_kml.xpath("./kml:name", 'kml' => 'http://earth.google.com/kml/2.2').text.strip
+      description = placemark_kml.xpath("./kml:description", 'kml' => 'http://earth.google.com/kml/2.2').text.strip
+      id = placemark_kml.xpath("./kml:id", 'kml' => 'http://earth.google.com/kml/2.2').text.strip
+      region = BorderPatrol::Region.new.add(:name => name, :description => description, :id => id, :polygons => polygons)
     end
-    BorderPatrol::Region.new(polygons)
   end
 
   private

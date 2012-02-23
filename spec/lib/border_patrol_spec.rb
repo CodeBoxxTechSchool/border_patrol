@@ -2,19 +2,36 @@ require 'spec_helper'
 
 describe BorderPatrol do
   describe ".parse_kml" do
-    it "returns a BorderPatrol::Region containing a BorderPatrol::Polygon for each polygon in the KML file" do
+    it "returns a BorderPatrol::Region containing a BorderPatrol::Polygon for each polygon in the KML file and its placemark name,id,description" do
       kml_data = File.read("#{File.dirname(__FILE__)}/../support/multi-polygon-test.kml")
-      region = BorderPatrol.parse_kml(kml_data)
-      region.length.should == 3
-      region.each {|p| p.should be_a BorderPatrol::Polygon}
+      regions = BorderPatrol.parse_kml(kml_data)
+      regions.length.should == 3
+      regions.each do |region|
+        region.each do |placemark|
+          pp placemark
+          placemark[:polygons].should be_a Array
+          placemark[:name].should be_a String
+          placemark[:description].should be_a String
+          placemark[:id].should be_a String
+        end
+      end
     end
 
     context "when there is only one polygon" do
       it "returns a region containing a single polygon" do
         kml_data = File.read("#{File.dirname(__FILE__)}/../support/colorado-test.kml")
-        region = BorderPatrol.parse_kml(kml_data)
-        region.length.should == 1
-        region.each {|p| p.should be_a BorderPatrol::Polygon}
+        regions = BorderPatrol.parse_kml(kml_data)
+        regions.length.should == 1
+        regions.each do |region|
+          region.each do |placemark|
+            pp placemark
+            placemark[:polygons].should be_a Array
+            placemark[:name].should be_a String
+            placemark[:description].should be_a String
+            placemark[:id].should be_a String
+          end
+        end
+
       end
     end
   end
@@ -45,15 +62,15 @@ describe BorderPatrol do
   describe BorderPatrol::Point do
     describe "==" do
       it "is true if both points contain the same values" do
-        BorderPatrol::Point.new(1,2).should == BorderPatrol::Point.new(1,2)
+        BorderPatrol::Point.new(1, 2).should == BorderPatrol::Point.new(1, 2)
       end
 
       it "is true if one point contains floats and one contains integers" do
-        BorderPatrol::Point.new(1,2.0).should == BorderPatrol::Point.new(1.0,2)
+        BorderPatrol::Point.new(1, 2.0).should == BorderPatrol::Point.new(1.0, 2)
       end
 
       it "is false if the points contain different values" do
-        BorderPatrol::Point.new(1,3).should_not == BorderPatrol::Point.new(1.0,2)
+        BorderPatrol::Point.new(1, 3).should_not == BorderPatrol::Point.new(1.0, 2)
       end
     end
   end

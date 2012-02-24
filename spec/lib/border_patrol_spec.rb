@@ -6,14 +6,12 @@ describe BorderPatrol do
       kml_data = File.read("#{File.dirname(__FILE__)}/../support/multi-polygon-test.kml")
       regions = BorderPatrol.parse_kml(kml_data)
       regions.length.should == 3
-      regions.each do |region|
-        region.each do |placemark|
+      regions.each do |placemark|
           pp placemark
           placemark[:polygons].should be_a Array
           placemark[:name].should be_a String
           placemark[:description].should be_a String
           placemark[:id].should be_a String
-        end
       end
     end
 
@@ -22,14 +20,12 @@ describe BorderPatrol do
         kml_data = File.read("#{File.dirname(__FILE__)}/../support/colorado-test.kml")
         regions = BorderPatrol.parse_kml(kml_data)
         regions.length.should == 1
-        regions.each do |region|
-          region.each do |placemark|
+        regions.each do |placemark|
             pp placemark
             placemark[:polygons].should be_a Array
             placemark[:name].should be_a String
             placemark[:description].should be_a String
             placemark[:id].should be_a String
-          end
         end
 
       end

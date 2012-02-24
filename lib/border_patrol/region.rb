@@ -11,9 +11,12 @@ module BorderPatrol
               end
       self.each do |placemark|
         placemark[:polygons].any? do |polygon|
-          return polygon.contains_point?(point) ? placemark : false
+          if polygon.contains_point?(point)
+            return placemark
+          end
         end
       end
+      return false
     end
   end
 end

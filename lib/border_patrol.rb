@@ -8,7 +8,7 @@ module BorderPatrol
     doc = Nokogiri::XML(string)
     region = BorderPatrol::Region.new
     doc.xpath('//kml:Placemark', 'kml' => 'http://earth.google.com/kml/2.2').map do |placemark_kml|
-      polygons = placemark_kml.xpath('./kml:Polygon', 'kml' => 'http://earth.google.com/kml/2.2').map do |polygon_kml|
+      polygons = placemark_kml.xpath('./kml:Polygon | ./kml:MultiGeometry/kml:Polygon', 'kml' => 'http://earth.google.com/kml/2.2').map do |polygon_kml|
         parse_kml_polygon_data(polygon_kml.to_s)
       end
       name = placemark_kml.xpath("./kml:name", 'kml' => 'http://earth.google.com/kml/2.2').text.strip

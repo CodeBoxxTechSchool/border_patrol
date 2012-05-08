@@ -7,7 +7,6 @@ describe BorderPatrol do
       regions = BorderPatrol.parse_kml(kml_data)
       regions.length.should == 3
       regions.each do |placemark|
-          pp placemark
           placemark[:polygons].should be_a Array
           placemark[:name].should be_a String
           placemark[:description].should be_a String
@@ -21,8 +20,23 @@ describe BorderPatrol do
         regions = BorderPatrol.parse_kml(kml_data)
         regions.length.should == 1
         regions.each do |placemark|
-            pp placemark
             placemark[:polygons].should be_a Array
+            placemark[:polygons].size.should == 1
+            placemark[:name].should be_a String
+            placemark[:description].should be_a String
+            placemark[:id].should be_a String
+        end
+
+      end
+    end
+    context "when there is multigeometry form and many polygons" do
+      it "returns a region containing a multiple polygons" do
+        kml_data = File.read("#{File.dirname(__FILE__)}/../support/multi-geometry-test.kml")
+        regions = BorderPatrol.parse_kml(kml_data)
+        regions.length.should == 1
+        regions.each do |placemark|
+            placemark[:polygons].should be_a Array
+            placemark[:polygons].size.should == 2
             placemark[:name].should be_a String
             placemark[:description].should be_a String
             placemark[:id].should be_a String

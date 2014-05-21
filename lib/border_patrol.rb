@@ -4,16 +4,16 @@ module BorderPatrol
   class Point < Struct.new(:x, :y);
   end
 
-  def self.parse_kml(string)
+  def self.parse_kml(string, namespace)
     doc = Nokogiri::XML(string)
     region = BorderPatrol::Region.new
-    doc.xpath('//kml:Placemark', 'kml' => 'http://earth.google.com/kml/2.2').map do |placemark_kml|
-      polygons = placemark_kml.xpath('./kml:Polygon | ./kml:MultiGeometry/kml:Polygon', 'kml' => 'http://earth.google.com/kml/2.2').map do |polygon_kml|
+    doc.xpath('//kml:Placemark', 'kml' => namespace).map do |placemark_kml|
+      polygons = placemark_kml.xpath('./kml:Polygon | ./kml:MultiGeometry/kml:Polygon', 'kml' => namespace).map do |polygon_kml|
         parse_kml_polygon_data(polygon_kml.to_s)
       end
-      name = placemark_kml.xpath("./kml:name", 'kml' => 'http://earth.google.com/kml/2.2').text.strip
-      description = placemark_kml.xpath("./kml:description", 'kml' => 'http://earth.google.com/kml/2.2').text.strip
-      id = placemark_kml.xpath("./kml:id", 'kml' => 'http://earth.google.com/kml/2.2').text.strip
+      name = placemark_kml.xpath("./kml:name", 'kml' => namespace).text.strip
+      description = placemark_kml.xpath("./kml:description", 'kml' => namespace).text.strip
+      id = placemark_kml.xpath("./kml:id", 'kml' => namespace).text.strip
       region.add(:name => name, :description => description, :id => id, :polygons => polygons)
     end
     region
